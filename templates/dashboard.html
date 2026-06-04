@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Ancre SaaS - Tableau de Bord</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f16e00; /* Orange Business */
+            --bg-dark: #0a0f16;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8f9fa;
+            --text-muted: #8b949e;
+        }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark), #1a202c);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+        /* Navbar */
+        .navbar {
+            padding: 1.5rem 3rem;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        .tenant-badge {
+            background: rgba(241, 110, 0, 0.15);
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(241, 110, 0, 0.3);
+        }
+        
+        /* Container */
+        .container {
+            padding: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Glassmorphism Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(241, 110, 0, 0.4);
+        }
+        .card h3 {
+            margin: 0 0 1rem 0;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+        .card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        .card .value.orange { color: var(--primary); }
+        
+        /* Table */
+        .table-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+        }
+        .table-container h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-active { background: rgba(46, 160, 67, 0.2); color: #4ade80; }
+        .status-deleted { background: rgba(248, 81, 73, 0.2); color: #f87171; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>⚓ L'Ancre SaaS</h1>
+        <div class="tenant-badge">👤 Espace Isolé : {{ tenant_name }}</div>
+    </nav>
+
+    <div class="container">
+        <!-- Metrics -->
+        <div class="grid">
+            <div class="card">
+                <h3>Utilisateurs Actifs (RBAC)</h3>
+                <p class="value">{{ metrics.users }}</p>
+            </div>
+            <div class="card">
+                <h3>Revenu Mensuel (MRR)</h3>
+                <p class="value orange">{{ metrics.revenue }}</p>
+            </div>
+            <div class="card">
+                <h3>Disponibilité (SLA)</h3>
+                <p class="value">{{ metrics.uptime }}</p>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-container">
+            <h2>📦 Catalogue Produits (Données Cloisonnées)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom du Produit</th>
+                        <th>Référence (SKU)</th>
+                        <th>Prix Unitaire</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td style="font-weight:600;">{{ product.name }}</td>
+                        <td style="color:var(--text-muted);">{{ product.sku }}</td>
+                        <td>€{{ product.price }}</td>
+                        <td>
+                            {% if product.status == 'Active' %}
+                                <span class="status-badge status-active">Actif</span>
+                            {% else %}
+                                <span class="status-badge status-deleted">Soft Deleted</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
