@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.postgres.indexes import GinIndex
 from django.core.validators import MinValueValidator
 
 class Tenant(models.Model):
@@ -37,5 +36,5 @@ class Product(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['tenant', 'name'], name='product_tenant_name_idx'),
-            GinIndex(fields=['metadata'], name='product_meta_gin')
         ]
+
