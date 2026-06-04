@@ -1,43 +1,18 @@
-# L'Ancre (Core Django) : API SaaS B2B Multi-Tenant & RBAC
+# ⚓ L'Ancre (Core Django) - API SaaS B2B Multi-Tenant
 
-## 📖 Description
-API SaaS B2B Multi-Tenant & RBAC avec Django 5.x
+Une architecture de cœur de système conçue pour la robustesse, l'isolation des données (Multi-Tenancy), et des performances sans compromis.
 
-## 🏗️ Choix d'Architecture
-- **Stack :** Django, PostgreSQL, Redis, Celery
-- **Pourquoi :** Optimisation des performances, scalabilité horizontale, asynchronisme natif, et respect des principes de l'architecture distribuée.
-- **Numérique Responsable :** Dockerisation "Green IT" via `alpine` / `slim`, multi-stage builds, optimisation requêtes BDD (pas de N+1), cache Redis.
+## 🚀 Architecture & Patterns Utilisés
+* **Isolation Multi-Tenant :** Stratégie de clés étrangères strictes (ou schémas via `django-tenants`) garantissant le cloisonnement total des données clients.
+* **Soft Deletion :** Les entités critiques (ex: `Product`) ne sont jamais supprimées physiquement (`is_deleted = True`), permettant la traçabilité et la récupération en cas d'erreur.
+* **Indexation PostgreSQL Avancée :**
+  * `B-Tree` composite sur les requêtes fréquentes (`tenant` + `name`).
+  * `GIN` (Generalized Inverted Index) sur les champs `JSONField` pour des recherches ultra-rapides dans le `metadata` complexe.
+* **Anti-Pattern N+1 :** Utilisation systématique de `select_related()` et `prefetch_related()` dans le queryset. Preuve par les tests automatisés et via `django-debug-toolbar` en DEV.
 
-## 🚀 Architecture
-```mermaid
-graph TD
-    Client --> API
-    API --> Redis(Cache/Broker)
-    API --> DB[(PostgreSQL)]
-    Redis --> Worker(Celery Workers)
-    Worker --> DB
-```
+## 🛡️ Sécurité & RGPD
+* Implémentation du RBAC (Role-Based Access Control) via des rôles utilisateurs stricts.
+* **Unicité :** Contrainte d'unicité `unique_together` par Tenant garantissant l'intégrité des bases B2B.
 
-## 🛠️ Installation Rapide (Local)
-
-1. **Cloner le dépôt**
-   ```bash
-   git clone <repo_url>
-   cd <project_dir>
-   ```
-
-2. **Lancer avec Docker Compose (App + DB + Redis + Worker)**
-   ```bash
-   docker-compose up --build
-   ```
-
-3. **Lancer les tests**
-   ```bash
-   docker-compose run app pytest
-   ```
-
-## 🧪 Qualité & Tests
-- **Couverture :** > 85% via Pytest
-- **Lintage :** Ruff, Black, Isort
-- **Typage :** MyPy
-- **CI/CD :** GitHub Actions
+## 🟢 Green IT & Optimisation
+* **Cache Redis :** Les endpoints de lecture lourds sont mis en cache via `django-redis` avec invalidation pilotée par les signaux Django (`post_save`). Cela réduit drastiquement la charge CPU sur PostgreSQL, diminuant l'empreinte énergétique des serveurs de base de données.
