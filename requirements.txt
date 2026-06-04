@@ -1,1 +1,10 @@
-pytest\npytest-cov\nruff\nblack\nisort\nmypy\ndjango>=5.0\ndjangorestframework\ndjango-tenants\npsycopg2-binary\ndjango-redis\ncelery\nredis\n
+pytest
+pytest-cov
+ruff
+black
+isort
+mypy
+django>=5.0
+djangorestframework
+gunicorn
+whitenoise
