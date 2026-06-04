@@ -15,9 +15,9 @@ RUN pip install --no-cache /wheels/*
 COPY . .
 
 # Sécurité : éviter l'exécution en root
-RUN useradd -m appuser && chown -R appuser:appuser /app
+RUN useradd -m appuser && chown -R appuser:appuser /app && chmod +x /app/entrypoint.sh
 USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120"]
+CMD ["/app/entrypoint.sh"]
